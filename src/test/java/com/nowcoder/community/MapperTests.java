@@ -1,8 +1,10 @@
 package com.nowcoder.community;
 
 import com.nowcoder.community.dao.DiscussPostMapper;
+import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +32,10 @@ public class MapperTests {
 
     @Autowired
     DiscussPostMapper discussPostMapper;
+
+    @Autowired
+    LoginTicketMapper loginTicketMapper;
+
 
     @Test
     public void testSelectUser() {
@@ -78,5 +84,40 @@ public class MapperTests {
         }
         int rows = discussPostMapper.selectDiscussPostRows(149);
         System.out.println(rows);
+    }
+
+    @Test
+    public void testInsertLoginTicket() {
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(101);
+        loginTicket.setTicket("abc");
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + 1000 * 60 * 10));
+
+        loginTicketMapper.insertLoginTicket(loginTicket);
+    }
+
+    @Test
+    public void testSelectLoginTicket() {
+        LoginTicket loginTicket = loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket);
+
+        loginTicketMapper.updateStatus("abc", 1);
+        loginTicket = loginTicketMapper.selectByTicket("abc");
+        System.out.println(loginTicket);
+    }
+
+    @Test
+    public void testInsertDiscussPost() {
+        DiscussPost post = new DiscussPost();
+        post.setUserId(149);
+        post.setTitle("测试添加");
+        post.setContent("11111");
+        post.setType(0);
+        post.setStatus(0);
+        post.setCreateTime(new Date());
+        post.setCommentCount(23);
+        post.setScore(1752.5797835966888);
+        discussPostMapper.insertDiscussPost(post);
     }
 }

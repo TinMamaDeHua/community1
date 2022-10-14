@@ -58,7 +58,7 @@ public class Page {
 
     /**
      * 获取当前页的起始行
-     *
+     * (当前的页码-1) * 每页显示的条数
      * @return
      */
     public int getOffset() {
@@ -81,6 +81,7 @@ public class Page {
     }
 
     /**
+     * 我们想在前端分页展示当前页的前2页
      * 获取起始页码
      *
      * @return
@@ -91,6 +92,7 @@ public class Page {
     }
 
     /**
+     * 我们想在前端分页展示当前页的后2页
      * 获取结束页码
      *
      * @return
@@ -98,6 +100,7 @@ public class Page {
     public int getTo() {
         int to = current + 2;
         int total = getTotal();
+        // 判断当前页的后2页是否达到了总页数
         return to > total ? total : to;
     }
 

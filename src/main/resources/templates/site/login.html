@@ -59,7 +59,9 @@
 			</div>
 		</header>
 
-		<!-- 内容 -->
+		<!-- 内容
+			th:text="${param.username}",param.username相当于request.getParameter("username")
+		-->
 		<div class="main">
 			<div class="container pl-5 pr-5 pt-3 pb-3 mt-3 mb-3">
 				<h3 class="text-center text-info border-bottom pb-3">登&nbsp;&nbsp;录</h3>
@@ -97,6 +99,9 @@
 						</div>
 						<div class="col-sm-4">
 							<img th:src="@{/kaptcha}" id="kaptcha" style="width:100px;height:40px;" class="mr-2"/>
+							<!--
+								href="javascript:refresh_kaptcha();"，写成这样，点击内容就是调用js方法
+							-->
 							<a href="javascript:refresh_kaptcha();" class="font-size-12 align-bottom">刷新验证码</a>
 						</div>
 					</div>				
@@ -106,7 +111,7 @@
 							<input type="checkbox" id="remember-me" name="rememberme"
 								   th:checked="${param.rememberme}">
 							<label class="form-check-label" for="remember-me">记住我</label>
-							<a href="forget.html" class="text-danger float-right">忘记密码?</a>
+							<a th:href="@{/forget}" class="text-danger float-right">忘记密码?</a>
 						</div>
 					</div>				
 					<div class="form-group row mt-4">
@@ -187,7 +192,10 @@
 	<script th:src="@{/js/global.js}"></script>
 	<script>
 		function refresh_kaptcha() {
+			// 我们这里给路径加上了一个可变的参数(服务端没用这参数)，其实是为了骗过浏览器（让它误以为改变了访问路径），让浏览器再去请求服务器
+			// 如果不加，浏览器比较智能，就会知道你访问的是静态资源，并且访问路径没变，就不会再去请求服务器
 			var path = CONTEXT_PATH + "/kaptcha?p=" + Math.random();
+			// 修改了id为kaptcha(图片)的src属性
 			$("#kaptcha").attr("src", path);
 		}
 	</script>

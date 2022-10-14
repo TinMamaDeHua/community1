@@ -1,12 +1,14 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.service.AlphaService;
+import com.nowcoder.community.util.CommunityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -20,7 +22,7 @@ import java.util.*;
  * @author:程圣严 日期：2022-10-5 15:46
  */
 @Controller
-@RequestMapping( "/alpha")
+@RequestMapping("/alpha")
 public class AlphaController {
 
     @Autowired
@@ -35,6 +37,7 @@ public class AlphaController {
     /**
      * 在访问这个方法时，前端控制器会给方法中的参数自动注入值
      * 底层的请求、响应操作
+     *
      * @param request
      * @param response
      */
@@ -60,7 +63,7 @@ public class AlphaController {
         /**
          * JDK7后，在try的括号中写流的信息，在编译的时候，会自动的加上finally，并且会在里面关闭流
          */
-        try(
+        try (
                 PrintWriter writer = response.getWriter();
         ) {
             writer.write("<h1>牛客网</h1>");
@@ -115,6 +118,7 @@ public class AlphaController {
     /**
      * 这种是上一个方法的简写，当访问到此方法时，DispatcherServlet给model属性会注入Model对象
      * 把Model传递给了跳转的视图
+     *
      * @param model
      * @return
      */
@@ -131,6 +135,7 @@ public class AlphaController {
 
     /**
      * 在访问此方法时，DispatcherServlet看到方法返回值是Map，会将Map对象转化为json对象返回给前端
+     *
      * @return
      */
     @RequestMapping(path = "/emp", method = RequestMethod.GET)
@@ -167,5 +172,46 @@ public class AlphaController {
         list.add(emp);
 
         return list;
+    }
+
+    @RequestMapping(path = "/cookie/set", method = RequestMethod.GET)
+    @ResponseBody
+    public String setCookie(HttpServletResponse response) {
+        // 一个cookie只能储存一对key-value值
+        Cookie cookie = new Cookie("code", CommunityUtil.generateUUID());
+        // 设置cookie的作用范围，不设置，浏览器每次请求都会带上cookie，这样会浪费网络资源(流量)
+        cookie.setPath("/community/alpha");
+        // 设置cookie的存活时间(单位：秒)
+        cookie.setMaxAge(60 * 10);
+        response.addCookie(cookie);
+
+        return "set cookie";
+    }
+
+    /**
+     * 当使用@CookieValue("code")注解后，服务端会从q请求头传过来的cookie中
+     * 找到key为code对应的值，赋值给code参数
+     *
+     * @param code
+     * @return
+     */
+    @RequestMapping(path = "/cookie/get", method = RequestMethod.GET)
+    @ResponseBody
+    public String getCookie(@CookieValue("code") String code) {
+        System.out.println(code);
+        return "get cookie";
+    }
+
+    /**
+     * 1、cookie是存储在浏览器的，若存储敏感数据(比如密码)，容易被导
+     * 2、浏览器每次请求服务端都会带上cookie，会浪费网络资源(流量),对性能会造成一定影响
+     */
+
+    @RequestMapping(path = "/ajax", method = RequestMethod.POST)
+    @ResponseBody
+    public String testAjax(String name, int age) {
+        System.out.println(name);
+        System.out.println(age);
+        return CommunityUtil.getJSONString(0, "操作成功!");
     }
 }

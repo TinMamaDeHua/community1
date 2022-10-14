@@ -10,7 +10,9 @@
 </head>
 <body>
 <div class="nk-container">
-	<!-- 头部 -->
+	<!-- 头部 ,加上th:fragment="header"即为头部这段代码加上了一个名(header)
+		之后这段代码便可以复用了
+	-->
 	<header class="bg-dark sticky-top" th:fragment="header">
 		<div class="container">
 			<!-- 导航 -->
@@ -23,7 +25,7 @@
 				<!-- 功能 -->
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav mr-auto">
-						<li class="nav-item ml-3 btn-group-vertical">
+						<li class="nav-item ml-3 btn-group-vertical" >
 							<a class="nav-link" th:href="@{/index}">首页</a>
 						</li>
 						<li class="nav-item ml-3 btn-group-vertical" th:if="${loginUser!=null}">
@@ -40,7 +42,7 @@
 								<img th:src="${loginUser.headerUrl}" class="rounded-circle" style="width:30px;"/>
 							</a>
 							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-								<a class="dropdown-item text-center" th:href="@{|/user/profile/${loginUser.id}|}">个人主页</a>
+								<a class="dropdown-item text-center" href="#">个人主页</a>
 								<a class="dropdown-item text-center" th:href="@{/user/setting}">账号设置</a>
 								<a class="dropdown-item text-center" th:href="@{/logout}">退出登录</a>
 								<div class="dropdown-divider"></div>
@@ -119,21 +121,22 @@
 			<!-- 帖子列表 -->
 			<ul class="list-unstyled">
 				<li class="media pb-3 pt-3 mb-3 border-bottom" th:each="map:${discussPosts}">
-					<a th:href="@{|/user/profile/${map.user.id}|}">
+					<a href="@{|/user/profile/${map.user.id}|}">
 						<img th:src="${map.user.headerUrl}" class="mr-4 rounded-circle" alt="用户头像" style="width:50px;height:50px;">
 					</a>
 					<div class="media-body">
 						<h6 class="mt-0 mb-3">
 							<a th:href="@{|/discuss/detail/${map.post.id}|}" th:utext="${map.post.title}">备战春招，面试刷题跟他复习，一个月全搞定！</a>
-							<span class="badge badge-secondary bg-primary" th:if="${map.post.type==1}">置顶</span>
-							<span class="badge badge-secondary bg-danger" th:if="${map.post.status==1}">精华</span>
+							<span class="badge badge-secondary bg-primary" >置顶</span>
+							<span class="badge badge-secondary bg-danger" >精华</span>
 						</h6>
 						<div class="text-muted font-size-12">
 							<u class="mr-3" th:utext="${map.user.username}">寒江雪</u> 发布于 <b th:text="${#dates.format(map.post.createTime,'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b>
 							<ul class="d-inline float-right">
 								<li class="d-inline ml-2">赞 <span >11</span></li>
 								<li class="d-inline ml-2">|</li>
-								<li class="d-inline ml-2">回帖 <span >7</span></li>
+								<!-- 帖子的评论 -->
+								<li class="d-inline ml-2">回帖 <span th:text="${map.post.commentCount}">7</span></li>
 							</ul>
 						</div>
 					</div>

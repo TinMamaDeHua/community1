@@ -1,10 +1,20 @@
 $(function(){
-	$("form").submit(check_data);
+	$("form").submit(check_data, check_data1);
 	$("input").focus(clear_error);
 });
 
 function check_data() {
 	var pwd1 = $("#password").val();
+	var pwd2 = $("#confirm-password").val();
+	if(pwd1 != pwd2) {
+		$("#confirm-password").addClass("is-invalid");
+		return false;
+	}
+	return true;
+}
+
+function check_data1() {
+	var pwd1 = $("#new-password").val();
 	var pwd2 = $("#confirm-password").val();
 	if(pwd1 != pwd2) {
 		$("#confirm-password").addClass("is-invalid");

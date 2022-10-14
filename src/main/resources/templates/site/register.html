@@ -11,7 +11,9 @@
 </head>
 <body>
 	<div class="nk-container">
-		<!-- 头部 -->
+		<!-- 头部，th:replace="index::header"意思是引入index页面中名为header的代码
+		 	引入后会覆盖当前这部分代码
+		 -->
 		<header class="bg-dark sticky-top" th:replace="index::header">
 			<div class="container">
 				<!-- 导航 -->
@@ -67,6 +69,18 @@
 					<div class="form-group row">
 						<label for="username" class="col-sm-2 col-form-label text-right">账号:</label>
 						<div class="col-sm-10">
+							<!--
+								我们在开发的时候，可以根据不同的逻辑来处理代码
+								1、第一次提交注册信息，我们需要给input加上相应的属性(要跟后端接收参数user的属性名一致)
+								2、在注册失败后，我们需要回填数据，根据user是否为null来判断
+								user为null时，我们就不回填
+								特殊情况：user不为null，但当前属性为空，此时也不用去处理，
+								因为其他地方没有用到该属性，即不会出现空指针异常
+								3、错误信息的展示，
+									我们这里是用的bootstrap来做的，非法信息显示的条件是判断input框是否有is-invalid属性
+									有的话，非法信息就会显示
+
+							-->
 							<input type="text"
 								   th:class="|form-control ${usernameMsg!=null?'is-invalid':''}|"
 								   th:value="${user!=null?user.username:''}"
