@@ -5,11 +5,13 @@ import org.apache.ibatis.annotations.*;
 
 /**
  * 概要描述：登陆凭证的mapper
- * 详细描述：
+ * 详细描述：我们用Redis来存储登录凭证，提高服务器的性能，就不往数据库里存了(因为登陆凭证访问很频繁)
+ *          给当前mapper加上@Deprecated注解，就是不推荐使用它了
  *
  * @author:程圣严 日期：2022-10-8 16:42
  */
 @Mapper
+@Deprecated
 public interface LoginTicketMapper {
 
     /**

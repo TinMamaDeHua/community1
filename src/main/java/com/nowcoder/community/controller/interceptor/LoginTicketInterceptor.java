@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 /**
- * 概要描述：
- * 详细描述：
+ * 概要描述：判断cookie中是否存在凭证，
+ * 详细描述：若凭证存在，就判断该凭证是否过期、该凭证是否超过了有效时间
  *
  * @author:程圣严 日期：2022-10-10 11:17
  */
