@@ -29,6 +29,14 @@ public class RedisKeyUtil {
     private static final String PREFIX_TICKET = "ticket";
     private static final String PREFIX_USER = "user";
     /**
+     * Unique Visitor(独立访客)
+     */
+    private static final String PREFIX_UV = "uv";
+    /**
+     * Daily Active User(日活跃用户)
+     */
+    private static final String PREFIX_DAV = "dav";
+    /**
      * 某个实体(帖子和评论)的赞
      * 格式为：like:entity:entityType:entityId -> set(userId)
      * 我们这里用set来存储赞了该实体的人的id集合,这样我们就可以通过实体的key获取那些人赞了这个实体
@@ -99,5 +107,40 @@ public class RedisKeyUtil {
      */
     public static String getUserKey(int userId) {
         return PREFIX_USER + SPLIT + userId;
+    }
+
+    /**
+     * 单日UV(独立访客)
+     * @param date
+     * @return
+     */
+    public static String getUVKey(String date) {
+        return PREFIX_UV + SPLIT + date;
+    }
+
+    /**
+     * 区间UV
+     */
+    public static String getUVKey(String startDate, String endDate) {
+        return PREFIX_UV + SPLIT + startDate + SPLIT + endDate;
+    }
+
+    /**
+     * 单日活跃用户(登录用户)
+     * @param date
+     * @return
+     */
+    public static String getDAUKey(String date) {
+        return PREFIX_DAV + SPLIT + date;
+    }
+
+    /**
+     * 区间活跃用户
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static String getDAUKey(String startDate, String endDate) {
+        return PREFIX_DAV + SPLIT + startDate + SPLIT + endDate;
     }
 }

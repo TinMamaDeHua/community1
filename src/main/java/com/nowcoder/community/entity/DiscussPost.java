@@ -2,47 +2,66 @@ package com.nowcoder.community.entity;
 
 
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import java.util.Date;
 
 /**
  * 帖子类
+ * @Document 注解，将帖子类与es中的索引做映射关系
+ * indexName 索引名
+ * type 类型(es7后，文档就被废除了，我们就随便写一个固定名即可)
+ * shards 分片数
+ * replicas 备份数
  * @author 86157
  */
-//@Document(indexName = "discusspost", type = "_doc", shards = 6, replicas = 3)
+@Document(indexName = "discusspost", type = "_doc", shards = 6, replicas = 3)
 public class DiscussPost {
 
-//    @Id
+    @Id
     private int id;
 
-//    @Field(type = FieldType.Integer)
+    @Field(type = FieldType.Integer)
     private int userId;
 
-    // 互联网校招
-//    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    /**
+     * 互联网校招
+     * analyzer 分词器，指定将title属性分词成什么程度，比如当前title为"互联网校招",要保存它
+     * 那设置analyzer = "ik_max_word"，就是尽可能地将这个词拆分(互联网、互联...)成多个词条，
+     * 与之匹配，增加搜索的范围，存到es中，作为查询"互联网校招"的索引
+     * 当搜索互联时，就会显示这条数据
+     * searchAnalyzer,搜索分词器，我们希望搜索时拆分的粗一点，拆分地聪明一点，能大概知晓我们的意图
+     * 比如我们搜的关键词拆分成互联网、校招就够了
+     *
+     */
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String title;
 
-//    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String content;
 
     /**
      * 0-普通; 1-置顶;
      */
-//    @Field(type = FieldType.Integer)
+    @Field(type = FieldType.Integer)
     private int type;
 
     /**
      * 0-正常; 1-精华; 2-拉黑;
      */
-//    @Field(type = FieldType.Integer)
+    @Field(type = FieldType.Integer)
     private int status;
 
-//    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date)
     private Date createTime;
 
-//    @Field(type = FieldType.Integer)
+    @Field(type = FieldType.Integer)
     private int commentCount;
 
-//    @Field(type = FieldType.Double)
+    @Field(type = FieldType.Double)
     private double score;
 
     public int getId() {

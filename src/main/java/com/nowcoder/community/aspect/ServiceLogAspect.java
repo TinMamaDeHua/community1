@@ -41,6 +41,8 @@ public class ServiceLogAspect {
         // 用户[ip],在[什么时间],访问了[哪个包的哪个方法，比如com.nowcoder.community.service.xxx()].
         // 要获取用户的ip，需要request对象
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        // 我们用Kafka做了系统通知，这时事件的消费者也会调用service层，此时就没有request对象
+        // 出现这种情况时，我们就不打印日志
         if (attributes == null) {
             return;
         }

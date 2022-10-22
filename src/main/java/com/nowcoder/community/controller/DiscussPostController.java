@@ -1,10 +1,8 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.dao.CommentMapper;
-import com.nowcoder.community.entity.Comment;
-import com.nowcoder.community.entity.DiscussPost;
-import com.nowcoder.community.entity.Page;
-import com.nowcoder.community.entity.User;
+import com.nowcoder.community.entity.*;
+import com.nowcoder.community.event.EventProducer;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.service.LikeService;
@@ -47,6 +45,9 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
 
+    @Autowired
+    private EventProducer eventProducer;
+
     /**
      * 我们这里只用接收以下2个参数即可，其他的type、status、comment_count、score、数据库设置了默认值为0
      *
@@ -72,6 +73,15 @@ public class DiscussPostController implements CommunityConstant {
 
         discussPostService.addDiscussPost(post);
 
+        // 触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId());
+        eventProducer.fireEvent(event);
+
+
         // 报错的情况,将来统一处理.
         return CommunityUtil.getJSONString(0, "发布成功!");
     }
@@ -79,6 +89,7 @@ public class DiscussPostController implements CommunityConstant {
     /**
      * 展示帖子的详细信息
      * 要展示帖子的所有评论，还有评论的评论(我们这里为了区分叫回复)
+     *
      * @param discussPostId
      * @param model
      * @return
@@ -107,7 +118,7 @@ public class DiscussPostController implements CommunityConstant {
 
         // 评论的分页信息,我们这里评论表的数据较少，所以每页显示5条
         page.setLimit(5);
-        page.setPath("/discuss/detail/"+ discussPostId);
+        page.setPath("/discuss/detail/" + discussPostId);
         // 评论总数，这里在设计帖子表时，专门加了帖子的评论总数，虽然造成了帖子表与评论表的冗余
         // 但是少进行了一次关联查询，效率要快一些
         page.setRows(post.getCommentCount());
@@ -138,7 +149,6 @@ public class DiscussPostController implements CommunityConstant {
 
                 // 帖子的评论没有回复目标，因为都是直接评论该帖子，
                 // 帖子的target_id=0
-
 
 
                 // 每条评论也有回复，故还需要一个回复列表
@@ -187,5 +197,83 @@ public class DiscussPostController implements CommunityConstant {
         model.addAttribute("comments", commentVoList);
 
         return "/site/discuss-detail";
+    }
+
+    /**
+     * 将帖子设置为置顶,取消置顶
+     * @param id
+     * @return
+     */
+    @RequestMapping(path = "/top", method = RequestMethod.POST)
+    @ResponseBody
+    public String setTop(int id) {
+        DiscussPost discussPostById = discussPostService.findDiscussPostById(id);
+        // 获取置顶状态，1为置顶，0为正常状态,1^1=0 0^1=1
+        int type = discussPostById.getType()^1;
+        discussPostService.updateType(id, type);
+        // 返回的结果
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", type);
+
+        // 修改完type，要同步es中的数据
+        // 触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0,null, map);
+    }
+
+    /**
+     * 加精
+     * @param id
+     * @return
+     */
+    @RequestMapping(path = "/wonderful", method = RequestMethod.POST)
+    @ResponseBody
+    public String setWonderful(int id) {
+        DiscussPost discussPostById = discussPostService.findDiscussPostById(id);
+        int status = discussPostById.getStatus()^1;
+        // 1为加精，0为正常， 1^1=0, 0^1=1
+        discussPostService.updateStatus(id, status);
+        // 返回的结果
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", status);
+
+        // 修改完status，要同步es中的数据
+        // 触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0,null, map);
+    }
+
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @RequestMapping(path = "/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public String setDelete(int id) {
+        discussPostService.updateStatus(id, 2);
+
+        // 修改完status，要同步es中的数据
+        // 触发删帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_DELETE)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0);
     }
 }

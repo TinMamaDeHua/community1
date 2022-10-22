@@ -46,4 +46,49 @@ public interface CommunityConstant {
      * 实体类型: 用户
      */
     int ENTITY_TYPE_USER = 3;
+
+    /**
+     * 主题类型：评论
+     */
+    String TOPIC_COMMENT = "comment";
+
+    /**
+     * 主题类型：点赞
+     */
+    String TOPIC_LIKE = "like";
+
+    /**
+     * 主题类型：关注
+     */
+    String TOPIC_FOLLOW = "follow";
+
+    /**
+     * 主题类型：发帖
+     */
+    String TOPIC_PUBLISH = "publish";
+
+    /**
+     * 主题类型：删帖
+     */
+    String TOPIC_DELETE = "delete";
+
+    /**
+     * 系统用户id
+     */
+    int SYSTEM_USER_ID = 1;
+
+    /**
+     * 权限：普通用户
+     */
+    String AUTHORITY_USER = "user";
+
+    /**
+     * 权限：管理员
+     */
+    String AUTHORITY_ADMIN= "admin";
+
+    /**
+     * 权限：版主
+     */
+    String AUTHORITY_MODERATOR = "moderator";
 }

@@ -14,7 +14,7 @@ public class Comment {
     /**
      * 实体类型：
      *      1--帖子
-     *      2--评论
+     *      2--回复
      */
     private int entityType;
 

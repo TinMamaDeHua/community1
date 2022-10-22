@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -90,7 +91,7 @@ public class LoginController implements CommunityConstant {
 
     /**
      * http://localhost:8081/community/activation/用户id/code(验证码)
-     * 接收用户激活
+     * 用户激活
      *
      * @return
      */
@@ -208,6 +209,8 @@ public class LoginController implements CommunityConstant {
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public String logout(@CookieValue("ticket") String ticket) {
         userService.logout(ticket);
+        // 清除认证结果
+        SecurityContextHolder.clearContext();
         return "redirect:/login";
     }
 
